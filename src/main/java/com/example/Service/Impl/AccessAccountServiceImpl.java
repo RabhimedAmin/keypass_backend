@@ -1,12 +1,14 @@
 package com.example.Service.Impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.Service.AccessAccountService;
 import com.example.model.AccessAccount;
+import com.example.model.Resource;
 import com.example.repository.AccessAccountRepository;
 
 @Service("accountService")
@@ -25,6 +27,10 @@ public class AccessAccountServiceImpl implements AccessAccountService {
 		// TODO Auto-generated method stub
 		return accessAccountRepository.findAll();
 	}
+    @Override 
+    public  Set<AccessAccount> getResourceAccounts(Resource r){
+    	return r.getAccountsRessource();
+    }
 
 	@Override
 	public AccessAccount modifyAccount(AccessAccount accessAccount) {

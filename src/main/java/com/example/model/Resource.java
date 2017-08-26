@@ -1,7 +1,6 @@
 package com.example.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -21,7 +20,9 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -31,6 +32,9 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@JsonIdentityInfo(
+		  generator = ObjectIdGenerators.PropertyGenerator.class, 
+		  property = "id")
 public class Resource
 {
 	public enum ResourceType {
@@ -70,24 +74,23 @@ public class Resource
 	@Column(name = "modif_date")
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
-
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime modificationDate;
 	
 	@Column(name = "expiration_date")
-	
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime expirationDate;
 	
-	@OneToMany(orphanRemoval = true)
+	@OneToMany(cascade= CascadeType.ALL)
 	@JoinColumn(name = "resource_id")
-	@JsonIgnore
+	//@JsonBackReference
 	private Set<AccessAccount> accountsRessource;
 	
+
 	@JsonIgnore
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.DETACH)
 	@JoinTable(name = "resource_managares", 
 		joinColumns = @JoinColumn(name = "ressource_id", referencedColumnName = "id"), 
 		inverseJoinColumns = @JoinColumn(name = "managers_id", referencedColumnName = "id")
@@ -274,115 +277,5 @@ public class Resource
 		this.name = name;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString()
-	{
-		return "Ressource [id=" + id + ", host=" + host + ", port=" + port
-				+ ", protocol=" + protocol + ", type=" + type + ", description="
-				+ description + ", creationDate=" + creationDate
-				+ ", modificationDate=" + modificationDate + ", expirationDate="
-				+ expirationDate + ", accountsRessource=" + accountsRessource
-				+ "]";
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((accountsRessource == null) ? 0
-				: accountsRessource.hashCode());
-		result = prime * result
-				+ ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result
-				+ ((expirationDate == null) ? 0 : expirationDate.hashCode());
-		result = prime * result + ((host == null) ? 0 : host.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((modificationDate == null) ? 0
-				: modificationDate.hashCode());
-		result = prime * result + port;
-		result = prime * result
-				+ ((protocol == null) ? 0 : protocol.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Resource other = (Resource) obj;
-		if (accountsRessource == null)
-		{
-			if (other.accountsRessource != null)
-				return false;
-		} else if (!accountsRessource.equals(other.accountsRessource))
-			return false;
-		if (creationDate == null)
-		{
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
-		if (description == null)
-		{
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (expirationDate == null)
-		{
-			if (other.expirationDate != null)
-				return false;
-		} else if (!expirationDate.equals(other.expirationDate))
-			return false;
-		if (host == null)
-		{
-			if (other.host != null)
-				return false;
-		} else if (!host.equals(other.host))
-			return false;
-		if (id == null)
-		{
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		if (modificationDate == null)
-		{
-			if (other.modificationDate != null)
-				return false;
-		} else if (!modificationDate.equals(other.modificationDate))
-			return false;
-		if (port != other.port)
-			return false;
-		if (protocol == null)
-		{
-			if (other.protocol != null)
-				return false;
-		} else if (!protocol.equals(other.protocol))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
-
-	
 	
 }

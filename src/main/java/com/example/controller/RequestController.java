@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Service.RequestService;
 import com.example.business.DemandeDto;
+import com.example.model.Member;
 import com.example.model.Request;
 
 @RestController("/Requests")
@@ -39,14 +40,17 @@ public class RequestController {
 	@RequestMapping(method = RequestMethod.POST, consumes = APPLICATION_JSON_VALUE)
 	public String creatdemande(@RequestBody DemandeDto demande) {
 
-		Request model = requestService.createNewDemande(demande.getId_Requester(), demande.getId_resource(),
+		Request model = requestService.createNewDemande(demande.getIdRequester(), demande.getIdResource(), 
 				demande.toModel());
 		return "redirect:/Requests/Request/" + model.getId();
 	}
 
 	@RequestMapping(value = "/demande/{id}", method = RequestMethod.PUT)
-	public String update(@RequestBody Request request) {
+	public String update(@PathVariable ("id")Request request, @RequestBody DemandeDto req ) {
+	
+		request.setStatu(req.getStatu());
 		requestService.modifydemande(request);
+		
 		return "redirect:/Requests/Request/" + request.getId();
 
 	}
@@ -55,5 +59,11 @@ public class RequestController {
 	public String delete(@PathVariable Long id) {
 		requestService.deleteDemande(id);
 		return "redirect:/Request";
+	}
+	@RequestMapping(value = "/manager/{id_manager}/requests", method = RequestMethod.GET)
+	public ResponseEntity<List<Request>> getRequestByManger( @PathVariable ("id_manager") Member manager) {
+		List <Request> searcheddemande = requestService.getRequest( manager);
+		return new ResponseEntity<>(searcheddemande, HttpStatus.OK);
+
 	}
 }

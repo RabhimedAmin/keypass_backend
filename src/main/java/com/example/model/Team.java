@@ -21,11 +21,11 @@ public class Team
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@OneToMany(orphanRemoval = true)
+	@OneToMany(orphanRemoval = true, cascade= CascadeType.DETACH)
 	@JoinColumn(name = "team_id")
 	private Set <Member> memberList;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.DETACH)
 	@JoinTable(name = "Team_AccessAccount", 
 		joinColumns = @JoinColumn(name = "team_id", referencedColumnName = "id"), 
 		inverseJoinColumns = @JoinColumn(name = "access_account_id", referencedColumnName = "id")

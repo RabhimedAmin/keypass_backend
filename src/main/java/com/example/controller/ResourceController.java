@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Service.AccessAccountService;
@@ -28,6 +30,7 @@ import com.example.model.Team;
 
 @RestController("/resources")
 @RequestMapping("/resources")
+@ResponseBody
 public class ResourceController {
 	@Autowired
 	private ResourceService resourceService;
@@ -84,9 +87,9 @@ public class ResourceController {
 	}
 
 	@RequestMapping(value = "/{id}/accounts", method = RequestMethod.GET)
-	public ResponseEntity<List<AccessAccount>> getAllAccountsByRessoourceId(@PathVariable("id") Resource r) {
+	public ResponseEntity<Set<AccessAccount>> getAllAccountsByRessoourceId(@PathVariable("id") Resource r) {
 		System.err.println(r.getAccountsRessource());
-		List<AccessAccount> searchedAccount = accessAccountService.getAllAccounts();
+		Set<AccessAccount> searchedAccount = accessAccountService.getResourceAccounts(r);
 		return new ResponseEntity<>(searchedAccount, HttpStatus.OK);
 	}
 	
@@ -95,8 +98,6 @@ public class ResourceController {
 		List<AccessAccount> searchedressource = accessAccountService.getAllAccounts();
 		return new ResponseEntity<>(searchedressource, HttpStatus.OK);
 	}
-
-	
 
 	// @RequestMapping(value = "/{id}/accounts", method = RequestMethod.POST)
 	// public String creatAccount(@PathVariable("id") Ressource resource,
@@ -117,8 +118,9 @@ public class ResourceController {
 
 	}
 
-	@RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
-	public ResponseEntity<AccessAccount> getAccountById(@PathVariable("id") Resource resource, Long Id) {
+	@RequestMapping(value = "{id_resource}/account/", method = RequestMethod.GET)
+	public ResponseEntity<AccessAccount> getAccountById(@PathVariable("id_resource") Resource resource,Long Id) {
+		Assert.notNull(Id, "Account id must not be null");
 		AccessAccount searchedAccount = accessAccountService.getAccount(Id);
 		return new ResponseEntity<>(searchedAccount, HttpStatus.OK);
 
@@ -142,12 +144,17 @@ public class ResourceController {
 	}
 
 	@RequestMapping(value = "{idResource}/manager/{idManager}", method = POST, produces = APPLICATION_JSON_VALUE)
-	public String GrantManagerAuthority(@PathVariable("idResource") Resource ressource,
+	public ResponseEntity<?> GrantManagerAuthority(@PathVariable("idResource") Resource ressource,
 			@PathVariable("idManager") Member member) {
 		Assert.notNull(member, "Manager not found");
 		Assert.notNull(ressource, "Resource not found");
-		memberService.addResourceManager(member, ressource);
-		return "redirect:Resource/" + ressource.getId() + "/manager/" + member.getId();
+		try {
+			memberService.addResourceManager(member, ressource);
+			return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 
 	@RequestMapping(value = "/manager/{id_manager}/resource/{id_resource}", method = RequestMethod.DELETE)
@@ -157,7 +164,7 @@ public class ResourceController {
 		return "redirect:Resource/" + r.getId() + "/member/" + member.getId();
 	}
 
-	@RequestMapping(value = ("team /{id_team}/account/{id_account}"), method = RequestMethod.POST)
+	@RequestMapping(value = ("team/{id_team}/account/{id_account}"), method = RequestMethod.POST)
 	public ResponseEntity<?> affecteAccountToGroupe(@PathVariable("id_team") Team team,
 			@PathVariable("id_account") AccessAccount accessAccount) {
 		teamService.ajouterAccount(team, accessAccount);

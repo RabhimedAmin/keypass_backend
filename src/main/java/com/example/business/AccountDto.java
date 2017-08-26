@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -27,11 +28,14 @@ public class AccountDto implements Serializable
 	
 	private String description;
 	
+	private Long  resource_id;
+	
 	public AccessAccount toModel(){
 		AccessAccount model = new AccessAccount();
 		model.setLogin(login);
 		model.setPassword(newPassword);
 		model.setDescription(description);
+		
 
 		return model;
 	}

@@ -76,9 +76,12 @@ public class ResourceServiceImpl implements ResourceService
 	public Set<AccessAccount> addAccountToRessource(Resource resource,
 			AccessAccount accessAccount)
 	{
+//		String pwd = accessAccount.getPassword();
+//		accessAccount.setPassword(password);
+		accessAccount.setResource(resource);
 		accessAccountRepository.save(accessAccount);
-		resource.getAccountsRessource().add(accessAccount);
-		resourceRepository.save(resource);
+//		resource.getAccountsRessource().add(accessAccount);
+//		resourceRepository.save(resource);
 		return resource.getAccountsRessource();
 		
 	}

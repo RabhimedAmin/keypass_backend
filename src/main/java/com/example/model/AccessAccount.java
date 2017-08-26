@@ -2,6 +2,7 @@ package com.example.model;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.wss4j.common.crypto.PasswordEncryptor;
+import org.hibernate.annotations.ColumnTransformer;
 import org.springframework.util.Assert;
 
 import com.example.business.AccountDto;
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "access_account")
 public class AccessAccount {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -29,21 +31,29 @@ public class AccessAccount {
 	private String login;
 
 	@Column(name = "password")
+	@ColumnTransformer(
+			  read="AES_DECRYPT(password, 'A45Z12EGG')", 
+			  write="AES_ENCRYPT(?, 'A45Z12EGG')")
+	//@Convert(converter=PasswordAESCrypto.class)
 	private String password;
 
-	@ManyToMany(mappedBy = "accessAccounts")
+	@ManyToMany(mappedBy = "accessAccounts", cascade= CascadeType.DETACH)
 	@JsonIgnore
 	private Set<Team> teams;
 
 	private String description;
 	
-	@ManyToOne
-	@JoinColumn(name = "resource_id")
-	
+	@ManyToOne(cascade= CascadeType.ALL)
+	@JoinColumn(name = "resource_id" , nullable = false, updatable = false)
+	//@JsonManagedReference
 	private Resource resource;
 
 	public Resource getResource() {
 		return resource;
+	}
+
+	public void setResource(Resource resource) {
+		this.resource = resource;
 	}
 
 	public AccessAccount() {
@@ -179,6 +189,4 @@ public class AccessAccount {
 			return false;
 		return true;
 	}
-	
-
 }

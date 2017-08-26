@@ -3,6 +3,7 @@ package com.example.Service;
 import java.util.List;
 import java.util.Set;
 
+import com.example.model.AccessAccount;
 import com.example.model.Member;
 import com.example.model.ProfileAuthorities;
 import com.example.model.Resource;
@@ -18,7 +19,7 @@ public interface MemberService
 	
 	Member getAgent(long id);
 	
-	Member getAgentByName(String name, String password);
+
 	
 	Member addResourceManager(Member member, Resource resource);
 	
@@ -33,6 +34,14 @@ public interface MemberService
 	Set<Resource> resourceManaged(Member member);
 
 	Member createNewMember(Member model, Long profileAutoritiesId, Long teamId);
+
+	Member getAgentByEmail(String email);
+
+	Set<AccessAccount> getTeamAccounts(Member member);
+
+	List<Resource> AccessedResources(Member member);
+
+
 
 
 

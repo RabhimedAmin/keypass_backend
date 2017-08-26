@@ -1,5 +1,6 @@
 package com.example.Service.Impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -9,12 +10,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.example.Service.MemberService;
+import com.example.model.AccessAccount;
 import com.example.model.Member;
 import com.example.model.ProfileAuthorities;
+import com.example.model.Request;
 import com.example.model.Resource;
 import com.example.model.Team;
 import com.example.repository.MemberRepository;
 import com.example.repository.ProfileAuthoritiesRepository;
+import com.example.repository.RequestRepository;
 import com.example.repository.ResourceRepository;
 import com.example.repository.TeamRepository;
 
@@ -32,6 +36,9 @@ public class MemberServiceImpl implements MemberService {
 	
 	@Autowired
 	TeamRepository teamRepository;
+	
+	@Autowired 
+	RequestRepository requestRepository;
 
 	
 
@@ -61,18 +68,16 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public Member getAgentByName(String name, String password) {
-		for (Member member : getAllAgents()) {
-			if (member.getName().equals(name) && member.getPassword().equalsIgnoreCase(password))
-				return member;
-		}
-		return null;
+	public Member getAgentByEmail(String email) {
+	 Member m= memberRepository.findFirstByEmail(email);
+	 return m;
 	}
 
 	@Override
 	public Member addResourceManager(Member member, Resource resource) {
 
-		if (member.isManager() && !(resource.getManagers().contains(member))) {
+		Assert.isTrue(member.isManager(), "member(id="+member.getId()+") doesn't have manager privileges");
+		if (!(resource.getManagers().contains(member))) {
 			resource.getManagers().add(member);
 			resourceRepository.save(resource);
 			memberRepository.save(member);
@@ -122,5 +127,36 @@ public class MemberServiceImpl implements MemberService {
 		return member;
 
 	}
-
+	@Override
+	public Set<AccessAccount> getTeamAccounts(Member member) {
+		
+		return member.getTeam().getAccounts();
 }
+	public List <Resource> accessToResource(Member m){
+		List <Resource> allResources=  resourceRepository.findAll();
+		List <Resource> accessedResources = new ArrayList<>();
+		for (Resource r:allResources){
+			for (AccessAccount acess:r.getAccountsRessource())
+				if (r.getAccountsRessource().equals(acess)){
+			if (m.getTeam().getAccounts().contains(r.getAccountsRessource()))
+				
+		accessedResources.add(r);
+			
+	}}
+		return accessedResources;
+}
+	@Override
+	public List <Resource> AccessedResources(Member member){
+;
+ String a= "Approved";
+ List <Resource> accessedResources =new ArrayList<>();
+
+ for (Request r: requestRepository.findAll())
+ if ((member.getId()==r.getRequester().getId()) && r.getStatu().equals(a))
+ 
+accessedResources.add(r.getRessource());
+ return accessedResources;
+
+
+
+}}

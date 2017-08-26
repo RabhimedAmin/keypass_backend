@@ -22,7 +22,7 @@ public class Request {
 	private long id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_requester", nullable = false, updatable = false)
+	@JoinColumn(name = "id_requester", nullable = false, updatable = true)
 	private Member requester;
 
 	public enum requestStatu {
@@ -32,7 +32,7 @@ public class Request {
 	private requestStatu statu;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "id_ressource", nullable = false, updatable = false)
+	@JoinColumn(name = "id_ressource", nullable = false, updatable = true)
 	private Resource resource;
 
 	@CreatedDate
@@ -41,6 +41,14 @@ public class Request {
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime creationDate;
+
+	public Resource getResource() {
+		return resource;
+	}
+
+	public void setResource(Resource resource) {
+		this.resource = resource;
+	}
 
 	@LastModifiedDate
 	@Column(name = "modif_date", columnDefinition = "DATETIME")
@@ -160,77 +168,7 @@ public class Request {
 		this.statu = statu;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Request [id=" + id + ", requester=" + requester + ", statu=" + statu + ", resource=" + resource
-				+ ", creationDate=" + creationDate + ", modificationDate=" + modificationDate + ", expiryDate="
-				+ expiryDate + ", goals=" + goals + "]";
-	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((expiryDate == null) ? 0 : expiryDate.hashCode());
-		result = prime * result + ((goals == null) ? 0 : goals.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((modificationDate == null) ? 0 : modificationDate.hashCode());
-		result = prime * result + ((requester == null) ? 0 : requester.hashCode());
-		result = prime * result + ((resource == null) ? 0 : resource.hashCode());
-		result = prime * result + ((statu == null) ? 0 : statu.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Request other = (Request) obj;
-		if (creationDate == null) {
-			if (other.creationDate != null)
-				return false;
-		} else if (!creationDate.equals(other.creationDate))
-			return false;
-		if (expiryDate == null) {
-			if (other.expiryDate != null)
-				return false;
-		} else if (!expiryDate.equals(other.expiryDate))
-			return false;
-		if (goals == null) {
-			if (other.goals != null)
-				return false;
-		} else if (!goals.equals(other.goals))
-			return false;
-		if (id != other.id)
-			return false;
-		if (modificationDate == null) {
-			if (other.modificationDate != null)
-				return false;
-		} else if (!modificationDate.equals(other.modificationDate))
-			return false;
-		if (requester == null) {
-			if (other.requester != null)
-				return false;
-		} else if (!requester.equals(other.requester))
-			return false;
-		if (resource == null) {
-			if (other.resource != null)
-				return false;
-		} else if (!resource.equals(other.resource))
-			return false;
-		if (statu != other.statu)
-			return false;
-		return true;
-	}
+	
 
 }

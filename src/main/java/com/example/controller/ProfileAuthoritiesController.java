@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Service.ProfileAuthoritiesService;
-import com.example.model.Member;
 import com.example.model.ProfileAuthorities;
 
 @RestController("/Profils")

@@ -27,6 +27,7 @@ public class SimpleAuthenticationFailureHandler implements AuthenticationFailure
 			AuthenticationException exception) throws IOException, ServletException {
 		
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		response.sendError(401, "Authentication failed");
 		response.getWriter().flush();
 		response.getWriter().close();
 	}
